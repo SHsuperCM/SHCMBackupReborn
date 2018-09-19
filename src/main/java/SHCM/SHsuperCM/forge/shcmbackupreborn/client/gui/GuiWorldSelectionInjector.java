@@ -4,6 +4,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiListWorldSelection;
 import net.minecraft.client.gui.GuiListWorldSelectionEntry;
 import net.minecraft.client.gui.GuiWorldSelection;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.world.storage.WorldSummary;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -22,21 +23,19 @@ public class GuiWorldSelectionInjector {
     @SubscribeEvent
     public static void inject(GuiScreenEvent.InitGuiEvent.Post event) {
         if(event.getGui() instanceof GuiWorldSelection) {
-            event.getButtonList().add(button = new GuiButton(97001,5,5,50,20,"Backups"));
+            event.getButtonList().add(button = new GuiButton(97001,5,5,50,20, I18n.format("gui.shcmbackupreborn.backups")));
         }
     }
 
     @SubscribeEvent
     public static void render(GuiScreenEvent.DrawScreenEvent.Pre event) throws IllegalAccessException {
-        if(event.getGui() instanceof GuiWorldSelection) {
-            GuiListWorldSelection list = (GuiListWorldSelection) GuiWorldSelection_selectionList.get(event.getGui());
-            button.enabled = list.getSelectedWorld() != null;
-        }
+        if(event.getGui() instanceof GuiWorldSelection)
+            button.enabled = ((GuiListWorldSelection)GuiWorldSelection_selectionList.get(event.getGui())).getSelectedWorld() != null;
     }
 
     @SubscribeEvent
     public static void click(GuiScreenEvent.ActionPerformedEvent.Pre event) throws IllegalAccessException {
-        if(event.getGui() instanceof GuiWorldSelection && event.getButton().id == 97001) {
+        if(event.getGui() instanceof GuiWorldSelection && event.getButton().id == button.id) {
             GuiListWorldSelection list = (GuiListWorldSelection) GuiWorldSelection_selectionList.get(event.getGui());
             if(list.getSelectedWorld() != null)
                 System.out.println(((WorldSummary)GuiListWorldSelectionEntry_worldSummary.get(list.getSelectedWorld())).getFileName());
