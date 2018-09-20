@@ -1,5 +1,6 @@
 package SHCM.SHsuperCM.forge.shcmbackupreborn.client.gui;
 
+import SHCM.SHsuperCM.forge.shcmbackupreborn.server.BackupsHandler;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiListWorldSelection;
 import net.minecraft.client.gui.GuiListWorldSelectionEntry;
@@ -38,7 +39,7 @@ public class GuiWorldSelectionInjector {
         if(event.getGui() instanceof GuiWorldSelection && event.getButton().id == button.id) {
             GuiListWorldSelection list = (GuiListWorldSelection) GuiWorldSelection_selectionList.get(event.getGui());
             if(list.getSelectedWorld() != null)
-                System.out.println(((WorldSummary)GuiListWorldSelectionEntry_worldSummary.get(list.getSelectedWorld())).getFileName());
+                System.out.println(BackupsHandler.getBackupNameFor(((WorldSummary) GuiListWorldSelectionEntry_worldSummary.get(list.getSelectedWorld())).getFileName(),I18n.format("gui.shcmbackupreborn.scheduled_backup")));
         }
     }
 
