@@ -1,2 +1,8 @@
 gui.shcmbackupreborn.backups=Backups
-gui.shcmbackupreborn.scheduled_backup=Scheduled
+gui.shcmbackupreborn.scheduled=Scheduled
+
+chat.shcmbackupreborn.backup.startbackup=Starting to back up the world(expect some lag..)
+chat.shcmbackupreborn.backup.endbackup=Finished backing up world ( %s )
+chat.shcmbackupreborn.backup.endbackupfailed=Failed to back up world, Please report this
+
+chat.shcmbackupreborn.backup.usage=backup [comment]

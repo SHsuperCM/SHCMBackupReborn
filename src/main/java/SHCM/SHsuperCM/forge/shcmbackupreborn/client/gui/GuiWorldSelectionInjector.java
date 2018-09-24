@@ -39,7 +39,7 @@ public class GuiWorldSelectionInjector {
         if(event.getGui() instanceof GuiWorldSelection && event.getButton().id == button.id) {
             GuiListWorldSelection list = (GuiListWorldSelection) GuiWorldSelection_selectionList.get(event.getGui());
             if(list.getSelectedWorld() != null)
-                System.out.println(BackupsHandler.getBackupNameFor(((WorldSummary) GuiListWorldSelectionEntry_worldSummary.get(list.getSelectedWorld())).getFileName(),I18n.format("gui.shcmbackupreborn.scheduled_backup")));
+                ;//Backups GUI for world
         }
     }
 
