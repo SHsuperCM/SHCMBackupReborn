@@ -11,14 +11,15 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-public class ZipHelper {
+public class FileUtils {
 
-    public static boolean zip(File fileToZip, File zipDestination, Predicate<File> filter) {
+    public static boolean zip(File fileToZip, File zipDestination, boolean includeRoot, Predicate<File> filter) {
         try {
             FileOutputStream fos = new FileOutputStream(zipDestination);
             ZipOutputStream zipOut = new ZipOutputStream(fos);
 
-            zipFile(fileToZip, fileToZip.getName(), zipOut, filter);
+            zipFile(fileToZip, fileToZip.getName(), zipOut, includeRoot, filter);
+
             zipOut.close();
             fos.close();
             return true;
@@ -49,21 +50,24 @@ public class ZipHelper {
             return false;
         }
     }
-    //TODO not include root directory in zip
-    private static void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut, Predicate<File> filter) throws IOException {
+
+    private static void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut, boolean includeRoot, Predicate<File> filter) throws IOException {
         if(!filter.test(fileToZip)) return;
         if (fileToZip.isDirectory()) {
-            if (fileName.endsWith("/")) {
-                zipOut.putNextEntry(new ZipEntry(fileName));
-                zipOut.closeEntry();
-            } else {
-                zipOut.putNextEntry(new ZipEntry(fileName + "/"));
-                zipOut.closeEntry();
-            }
-            File[] children = fileToZip.listFiles();
-            for (File childFile : children) {
-                zipFile(childFile, fileName + "/" + childFile.getName(), zipOut, filter);
-            }
+            if(includeRoot) {
+                if (fileName.endsWith("/")) {
+                    zipOut.putNextEntry(new ZipEntry(fileName));
+                    zipOut.closeEntry();
+                } else {
+                    zipOut.putNextEntry(new ZipEntry(fileName + "/"));
+                    zipOut.closeEntry();
+                }
+                for (File childFile : fileToZip.listFiles())
+                    zipFile(childFile, fileName + "/" + childFile.getName(), zipOut, true, filter);
+            } else
+                for (File childFile : fileToZip.listFiles())
+                    zipFile(childFile, childFile.getName(), zipOut, true, filter);
+
             return;
         }
         FileInputStream fis = new FileInputStream(fileToZip);

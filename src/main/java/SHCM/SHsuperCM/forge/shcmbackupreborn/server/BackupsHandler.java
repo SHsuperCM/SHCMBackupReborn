@@ -1,11 +1,10 @@
 package SHCM.SHsuperCM.forge.shcmbackupreborn.server;
 
 import SHCM.SHsuperCM.forge.shcmbackupreborn.common.misc.Reference;
-import SHCM.SHsuperCM.forge.shcmbackupreborn.common.misc.ZipHelper;
+import SHCM.SHsuperCM.forge.shcmbackupreborn.common.misc.FileUtils;
 import SHCM.SHsuperCM.forge.shcmbackupreborn.common.storage.WorldProfile;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.MinecraftException;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
@@ -60,7 +59,7 @@ public class BackupsHandler {
 
         File backupDestination = new File(directory, Reference.PATH_ROOT_BACKUPS + "\\" + new java.text.SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new java.util.Date()) + "_" + comment);
 
-        boolean o = ZipHelper.zip(directory,backupDestination,file -> !file.getAbsolutePath().endsWith(Reference.PATH_ROOT_BACKUPS));
+        boolean o = FileUtils.zip(directory,backupDestination, false, file -> !file.getAbsolutePath().endsWith(Reference.PATH_ROOT_BACKUPS));
 
 
         if(ingame) {
