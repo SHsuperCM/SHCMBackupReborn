@@ -1,18 +1,22 @@
 package SHCM.SHsuperCM.forge.shcmbackupreborn;
 
 import SHCM.SHsuperCM.forge.shcmbackupreborn.common.storage.WorldProfile;
+import SHCM.SHsuperCM.forge.shcmbackupreborn.server.AutoBackupHandler;
 import SHCM.SHsuperCM.forge.shcmbackupreborn.server.BackupsHandler;
 import SHCM.SHsuperCM.forge.shcmbackupreborn.server.commands.CommandBackup;
-import net.minecraft.util.text.TextComponentString;
+import SHCM.SHsuperCM.forge.shcmbackupreborn.server.commands.CommandDebug;
+import SHCM.SHsuperCM.forge.shcmbackupreborn.server.commands.CommandSHCMBackupReborn;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import SHCM.SHsuperCM.forge.shcmbackupreborn.common.CommonProxy;
 import net.minecraftforge.fml.common.event.*;
+import org.apache.logging.log4j.Logger;
 
 @Mod(modid = SHCMBackupReborn.MODID)
 public class SHCMBackupReborn {
     public static final String MODID = "shcmbackupreborn";
+    public static Logger logger;
 
     @SidedProxy(clientSide = "SHCM.SHsuperCM.forge." + MODID + ".client.ClientProxy", serverSide = "SHCM.SHsuperCM.forge." + MODID + ".server.ServerProxy")
     public static CommonProxy PROXY;
@@ -22,6 +26,7 @@ public class SHCMBackupReborn {
 
     @Mod.EventHandler
     public void init(FMLPreInitializationEvent event) {
+        logger = event.getModLog();
         PROXY.init(event);
     }
 
@@ -39,8 +44,18 @@ public class SHCMBackupReborn {
     public void init(FMLServerStartingEvent event) {
         event.registerServerCommand(new CommandBackup());
     }
+
     @Mod.EventHandler
     public void init(FMLServerStartedEvent event) {
         WorldProfile profile = BackupsHandler.validateWorldProfile(FMLCommonHandler.instance().getMinecraftServerInstance().worlds[0].getSaveHandler().getWorldDirectory());
+
+        AutoBackupHandler.currentWorldProfile = profile;
+        AutoBackupHandler.lastbackup = System.currentTimeMillis();
+    }
+
+    @Mod.EventHandler
+    public void stop(FMLServerStoppingEvent event) {
+        AutoBackupHandler.currentWorldProfile = null;
+        AutoBackupHandler.lastbackup = -1;
     }
 }

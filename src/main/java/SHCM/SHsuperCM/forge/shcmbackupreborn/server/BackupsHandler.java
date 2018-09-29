@@ -1,8 +1,10 @@
 package SHCM.SHsuperCM.forge.shcmbackupreborn.server;
 
+import SHCM.SHsuperCM.forge.shcmbackupreborn.SHCMBackupReborn;
 import SHCM.SHsuperCM.forge.shcmbackupreborn.common.misc.Reference;
 import SHCM.SHsuperCM.forge.shcmbackupreborn.common.misc.FileUtils;
 import SHCM.SHsuperCM.forge.shcmbackupreborn.common.storage.WorldProfile;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.WorldServer;
@@ -26,13 +28,14 @@ public class BackupsHandler {
             worldProfile.readFile(fileWorldProfile);
         worldProfile.writeToFile(fileWorldProfile);
 
-        worldProfile.directory = fileWorldProfile;
+        worldProfile.directory = world;
 
         return worldProfile;
     }
 
     public static boolean backup(File directory, String comment, boolean ingame) {
         MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+        long start = System.currentTimeMillis();
         if(ingame) {
             server.getPlayerList().sendMessage(new TextComponentTranslation("chat.shcmbackupreborn.backup.startbackup"));
 
@@ -56,11 +59,15 @@ public class BackupsHandler {
                 worldServer.disableLevelSaving = true;
             }
         }
-
-        File backupDestination = new File(directory, Reference.PATH_ROOT_BACKUPS + "\\" + new java.text.SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new java.util.Date()) + "_" + comment);
+        String datetime = new java.text.SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new java.util.Date());
+        File backupDestination = new File(directory, Reference.PATH_ROOT_BACKUPS + "\\" + datetime + "_" + comment);
 
         boolean o = FileUtils.zip(directory,backupDestination, false, file -> !file.getAbsolutePath().endsWith(Reference.PATH_ROOT_BACKUPS));
 
+        if(o)
+            SHCMBackupReborn.logger.info("Backed up the world to " + backupDestination.getAbsolutePath());
+
+        AutoBackupHandler.lastbackup = System.currentTimeMillis();
 
         if(ingame) {
             for (int i = 0; i < oldSaveStates.length; i++) {
@@ -69,7 +76,7 @@ public class BackupsHandler {
                 if (worldServer != null)
                     worldServer.disableLevelSaving = oldSaveStates[i];
             }
-            server.getPlayerList().sendMessage(o ? new TextComponentTranslation("chat.shcmbackupreborn.backup.endbackup",backupDestination.getName()) : new TextComponentTranslation("chat.shcmbackupreborn.backup.endbackupfailed"));
+            server.getPlayerList().sendMessage(o ? new TextComponentTranslation("chat.shcmbackupreborn.backup.endbackup", (System.currentTimeMillis() - start), datetime, comment.equals("gui.shcmbackupreborn.scheduled") ? I18n.format("gui.shcmbackupreborn.scheduled") : comment) : new TextComponentTranslation("chat.shcmbackupreborn.backup.endbackupfailed"));
         }
         return o;
     }
