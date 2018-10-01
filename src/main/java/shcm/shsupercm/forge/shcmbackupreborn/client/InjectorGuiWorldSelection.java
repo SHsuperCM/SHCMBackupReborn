@@ -1,5 +1,6 @@
 package shcm.shsupercm.forge.shcmbackupreborn.client;
 
+import net.minecraft.client.Minecraft;
 import shcm.shsupercm.forge.shcmbackupreborn.SHCMBackupReborn;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.resources.I18n;
@@ -11,6 +12,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import shcm.shsupercm.forge.shcmbackupreborn.client.gui.GuiBackups;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -84,7 +86,7 @@ public class InjectorGuiWorldSelection {
                     GuiListWorldSelection list = (GuiListWorldSelection) GuiWorldSelection_selectionList.get(event.getGui());
                     if(list.getSelectedWorld() != null) {
                         WorldSummary worldSummary = (WorldSummary)GuiListWorldSelectionEntry_worldSummary.get(list.getSelectedWorld());
-                        SHCMBackupReborn.logger.info("backups gui open " + worldSummary.getFileName());
+                        Minecraft.getMinecraft().displayGuiScreen(new GuiBackups(worldSummary,Minecraft.getMinecraft().currentScreen));
                     }
                 }
             }
@@ -125,7 +127,7 @@ public class InjectorGuiWorldSelection {
                     Object selectedWorld = OTGGuiListWorldSelection_getSelectedWorld.invoke(OTGGuiWorldSelection_selectionList.get(event.getGui()));
                     if(selectedWorld != null) {
                         WorldSummary worldSummary = (WorldSummary) OTGGuiListWorldSelectionEntry_worldSummary.get(selectedWorld);
-                        SHCMBackupReborn.logger.info("backups gui open " + worldSummary.getFileName());
+                        Minecraft.getMinecraft().displayGuiScreen(new GuiBackups(worldSummary,Minecraft.getMinecraft().currentScreen));
                     }
                 }
             }

@@ -17,7 +17,7 @@ public class SHCMBackupReborn {
     public static final String MODID = "shcmbackupreborn";
     public static Logger logger;
 
-    @SidedProxy(clientSide = "SHCM.shc.forge." + MODID + ".client.ClientProxy", serverSide = "SHCM.shc.forge." + MODID + ".server.ServerProxy")
+    @SidedProxy(clientSide = "shcm.shsupercm.forge." + MODID + ".client.ClientProxy", serverSide = "shcm.shsupercm.forge." + MODID + ".server.ServerProxy")
     public static CommonProxy PROXY;
 
     @Mod.Instance
