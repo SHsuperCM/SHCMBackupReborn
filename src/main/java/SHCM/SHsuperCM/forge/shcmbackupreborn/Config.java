@@ -8,9 +8,13 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 @Mod.EventBusSubscriber
 @net.minecraftforge.common.config.Config(modid = SHCMBackupReborn.MODID)
 public class Config {
-
-
-
+    @net.minecraftforge.common.config.Config.Name("Archive save path")
+    @net.minecraftforge.common.config.Config.Comment({
+            "If a world has chosen \'archive_on_threshold\' as the trim,",
+            "behavior once it has reached the limit of backups all backups",
+            "would be zipped up and moved to this path. In addition, the",
+            "file \"[the path]\\archive.bat\" will run if it exists."})
+    public static String archive_save_path = "C:\\Archived Minecraft Backups";
 
     @SubscribeEvent
     public static void SyncConfig(ConfigChangedEvent event) {

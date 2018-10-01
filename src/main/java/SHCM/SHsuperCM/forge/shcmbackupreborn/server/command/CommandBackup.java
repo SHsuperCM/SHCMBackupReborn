@@ -1,4 +1,4 @@
-package SHCM.SHsuperCM.forge.shcmbackupreborn.server.commands;
+package SHCM.SHsuperCM.forge.shcmbackupreborn.server.command;
 
 import SHCM.SHsuperCM.forge.shcmbackupreborn.server.BackupsHandler;
 import net.minecraft.command.CommandBase;
@@ -23,8 +23,6 @@ public class CommandBackup extends CommandBase {
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-        String comment = args.length > 0 ? String.join(" ",args) : "";
-
-        BackupsHandler.backup(FMLCommonHandler.instance().getMinecraftServerInstance().worlds[0].getSaveHandler().getWorldDirectory(),comment,true);
+        BackupsHandler.backup(FMLCommonHandler.instance().getMinecraftServerInstance().worlds[0].getSaveHandler().getWorldDirectory(),buildString(args,0));
     }
 }

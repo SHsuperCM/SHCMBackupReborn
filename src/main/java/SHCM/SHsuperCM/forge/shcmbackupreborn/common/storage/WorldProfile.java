@@ -1,22 +1,25 @@
 package SHCM.SHsuperCM.forge.shcmbackupreborn.common.storage;
 
+import SHCM.SHsuperCM.core.snbt.misc.Storage;
 import net.minecraft.nbt.NBTTagCompound;
 
-import java.io.File;
-
 public class WorldProfile extends Storage {public WorldProfile() {}
+    public static WorldProfile currentWorldProfile = null;
+
+
     public long autoBackupInterval = 0; //0 for disabled, >0 for millis interval
-    public int trimAmount = 0; //0 for disabled, >0 for max backups before trimming
-    public boolean archiveTrimmings = false; //false for delete excess, true for zip excess and move to config excess path
-    public File directory;
+    public long lastBackup = -1; //when in epoch was the last backup
+    public int trimMaxBackups = 0; //0 for disabled, >0 for max backups before trimming
+    public String trimBehavior = "delete_excess"; //delete_excess or archive_on_threshold
 
     @Override
     public NBTTagCompound serializeNBT() {
         NBTTagCompound compound = new NBTTagCompound();
 
         compound.setLong("autoBackupInterval",autoBackupInterval);
-        compound.setInteger("trimAmount",trimAmount);
-        compound.setBoolean("archiveTrimmings",archiveTrimmings);
+        compound.setLong("lastBackup",lastBackup);
+        compound.setInteger("trimMaxBackups", trimMaxBackups);
+        compound.setString("trimBehavior", trimBehavior);
 
         return compound;
     }
@@ -24,8 +27,9 @@ public class WorldProfile extends Storage {public WorldProfile() {}
     @Override
     public void deserializeNBT(NBTTagCompound nbt) {
         autoBackupInterval = nbt.getLong("autoBackupInterval");
-        trimAmount = nbt.getInteger("trimAmount");
-        archiveTrimmings = nbt.getBoolean("archiveTrimmings");
+        lastBackup = nbt.getLong("lastBackup");
+        trimMaxBackups = nbt.getInteger("trimMaxBackups");
+        trimBehavior = nbt.getString("trimBehavior");
     }
 
 

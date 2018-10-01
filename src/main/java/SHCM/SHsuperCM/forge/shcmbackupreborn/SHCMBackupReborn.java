@@ -3,9 +3,9 @@ package SHCM.SHsuperCM.forge.shcmbackupreborn;
 import SHCM.SHsuperCM.forge.shcmbackupreborn.common.storage.WorldProfile;
 import SHCM.SHsuperCM.forge.shcmbackupreborn.server.AutoBackupHandler;
 import SHCM.SHsuperCM.forge.shcmbackupreborn.server.BackupsHandler;
-import SHCM.SHsuperCM.forge.shcmbackupreborn.server.commands.CommandBackup;
-import SHCM.SHsuperCM.forge.shcmbackupreborn.server.commands.CommandDebug;
-import SHCM.SHsuperCM.forge.shcmbackupreborn.server.commands.CommandSHCMBackupReborn;
+import SHCM.SHsuperCM.forge.shcmbackupreborn.server.command.CommandBackup;
+import SHCM.SHsuperCM.forge.shcmbackupreborn.server.command.CommandDebug;
+import SHCM.SHsuperCM.forge.shcmbackupreborn.server.command.CommandSHCMBackupReborn;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -43,19 +43,19 @@ public class SHCMBackupReborn {
     @Mod.EventHandler
     public void init(FMLServerStartingEvent event) {
         event.registerServerCommand(new CommandBackup());
+        event.registerServerCommand(new CommandSHCMBackupReborn());
+        event.registerServerCommand(new CommandDebug());
     }
 
     @Mod.EventHandler
     public void init(FMLServerStartedEvent event) {
         WorldProfile profile = BackupsHandler.validateWorldProfile(FMLCommonHandler.instance().getMinecraftServerInstance().worlds[0].getSaveHandler().getWorldDirectory());
 
-        AutoBackupHandler.currentWorldProfile = profile;
-        AutoBackupHandler.lastbackup = System.currentTimeMillis();
+        WorldProfile.currentWorldProfile = profile;
     }
 
     @Mod.EventHandler
     public void stop(FMLServerStoppingEvent event) {
-        AutoBackupHandler.currentWorldProfile = null;
-        AutoBackupHandler.lastbackup = -1;
+        WorldProfile.currentWorldProfile = null;
     }
 }

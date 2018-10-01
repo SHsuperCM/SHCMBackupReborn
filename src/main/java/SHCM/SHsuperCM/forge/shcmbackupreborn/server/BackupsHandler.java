@@ -26,16 +26,16 @@ public class BackupsHandler {
         WorldProfile worldProfile = new WorldProfile();
         if(fileWorldProfile.exists())
             worldProfile.readFile(fileWorldProfile);
-        worldProfile.writeToFile(fileWorldProfile);
-
-        worldProfile.directory = world;
+        worldProfile.writeFile(fileWorldProfile);
 
         return worldProfile;
     }
 
-    public static boolean backup(File directory, String comment, boolean ingame) {
+    public static boolean backup(File directory, String comment) {
         MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
         long start = System.currentTimeMillis();
+        boolean ingame = WorldProfile.currentWorldProfile != null;
+
         if(ingame) {
             server.getPlayerList().sendMessage(new TextComponentTranslation("chat.shcmbackupreborn.backup.startbackup"));
 
@@ -59,6 +59,7 @@ public class BackupsHandler {
                 worldServer.disableLevelSaving = true;
             }
         }
+        long datetimeEpoch = System.currentTimeMillis();
         String datetime = new java.text.SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new java.util.Date());
         File backupDestination = new File(directory, Reference.PATH_ROOT_BACKUPS + "\\" + datetime + "_" + comment);
 
@@ -67,9 +68,13 @@ public class BackupsHandler {
         if(o)
             SHCMBackupReborn.logger.info("Backed up the world to " + backupDestination.getAbsolutePath());
 
-        AutoBackupHandler.lastbackup = System.currentTimeMillis();
+        WorldProfile worldProfile = new WorldProfile();
+        worldProfile.readFile(new File(directory,Reference.PATH_WORLDPROFILE));
+        worldProfile.lastBackup = datetimeEpoch;
+        worldProfile.writeFile();
 
         if(ingame) {
+            WorldProfile.currentWorldProfile = worldProfile;
             for (int i = 0; i < oldSaveStates.length; i++) {
                 WorldServer worldServer = server.worlds[i];
 

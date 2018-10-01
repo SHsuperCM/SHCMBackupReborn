@@ -7,12 +7,9 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 @Mod.EventBusSubscriber
 public class AutoBackupHandler {
-    public static WorldProfile currentWorldProfile = null;
-    public static long lastbackup = -1;
-
     @SubscribeEvent
     public static void tick(TickEvent.ServerTickEvent event) {
-        if(lastbackup != -1 && currentWorldProfile != null && currentWorldProfile.autoBackupInterval > 0 && System.currentTimeMillis() - lastbackup >= currentWorldProfile.autoBackupInterval)
-            BackupsHandler.backup(currentWorldProfile.directory,"gui.shcmbackupreborn.scheduled", true);
+        if(WorldProfile.currentWorldProfile != null && WorldProfile.currentWorldProfile.lastBackup != -1 && WorldProfile.currentWorldProfile.autoBackupInterval > 0 && System.currentTimeMillis() - WorldProfile.currentWorldProfile.lastBackup >= WorldProfile.currentWorldProfile.autoBackupInterval)
+            BackupsHandler.backup(WorldProfile.currentWorldProfile.file.getParentFile().getParentFile(),"gui.shcmbackupreborn.scheduled");
     }
 }
