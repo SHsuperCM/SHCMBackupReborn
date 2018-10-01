@@ -1,6 +1,6 @@
-package SHCM.SHsuperCM.forge.shcmbackupreborn.server.command;
+package shcm.shsupercm.forge.shcmbackupreborn.server.command;
 
-import SHCM.SHsuperCM.forge.shcmbackupreborn.common.storage.WorldProfile;
+import shcm.shsupercm.forge.shcmbackupreborn.common.storage.WorldProfile;
 import net.minecraft.command.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;

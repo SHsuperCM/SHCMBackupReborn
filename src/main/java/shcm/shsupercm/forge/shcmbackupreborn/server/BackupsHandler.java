@@ -1,9 +1,9 @@
-package SHCM.SHsuperCM.forge.shcmbackupreborn.server;
+package shcm.shsupercm.forge.shcmbackupreborn.server;
 
-import SHCM.SHsuperCM.forge.shcmbackupreborn.SHCMBackupReborn;
-import SHCM.SHsuperCM.forge.shcmbackupreborn.common.misc.Reference;
-import SHCM.SHsuperCM.forge.shcmbackupreborn.common.misc.FileUtils;
-import SHCM.SHsuperCM.forge.shcmbackupreborn.common.storage.WorldProfile;
+import shcm.shsupercm.forge.shcmbackupreborn.SHCMBackupReborn;
+import shcm.shsupercm.forge.shcmbackupreborn.common.misc.Reference;
+import shcm.shsupercm.forge.shcmbackupreborn.common.misc.FileUtils;
+import shcm.shsupercm.forge.shcmbackupreborn.common.storage.WorldProfile;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -11,7 +11,6 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.InvalidPathException;
 
 public class BackupsHandler {

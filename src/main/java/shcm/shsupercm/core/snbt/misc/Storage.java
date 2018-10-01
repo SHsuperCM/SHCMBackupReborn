@@ -3,7 +3,7 @@
  * Made by SHsuperCM
  */
 
-package SHCM.SHsuperCM.core.snbt.misc;
+package shcm.shsupercm.core.snbt.misc;
 
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;

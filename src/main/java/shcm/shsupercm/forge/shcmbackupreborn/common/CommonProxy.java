@@ -1,4 +1,4 @@
-package SHCM.SHsuperCM.forge.shcmbackupreborn.common;
+package shcm.shsupercm.forge.shcmbackupreborn.common;
 
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;

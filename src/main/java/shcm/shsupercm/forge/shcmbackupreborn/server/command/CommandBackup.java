@@ -1,6 +1,6 @@
-package SHCM.SHsuperCM.forge.shcmbackupreborn.server.command;
+package shcm.shsupercm.forge.shcmbackupreborn.server.command;
 
-import SHCM.SHsuperCM.forge.shcmbackupreborn.server.BackupsHandler;
+import shcm.shsupercm.forge.shcmbackupreborn.server.BackupsHandler;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;

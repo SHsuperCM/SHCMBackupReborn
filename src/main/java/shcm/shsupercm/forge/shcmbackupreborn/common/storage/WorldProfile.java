@@ -1,6 +1,6 @@
-package SHCM.SHsuperCM.forge.shcmbackupreborn.common.storage;
+package shcm.shsupercm.forge.shcmbackupreborn.common.storage;
 
-import SHCM.SHsuperCM.core.snbt.misc.Storage;
+import shcm.shsupercm.core.snbt.misc.Storage;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class WorldProfile extends Storage {public WorldProfile() {}

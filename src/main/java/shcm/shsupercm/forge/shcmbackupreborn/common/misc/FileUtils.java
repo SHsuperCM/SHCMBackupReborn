@@ -1,4 +1,4 @@
-package SHCM.SHsuperCM.forge.shcmbackupreborn.common.misc;
+package shcm.shsupercm.forge.shcmbackupreborn.common.misc;
 
 import java.io.File;
 import java.io.FileInputStream;

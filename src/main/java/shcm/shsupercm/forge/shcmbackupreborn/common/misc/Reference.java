@@ -1,4 +1,4 @@
-package SHCM.SHsuperCM.forge.shcmbackupreborn.common.misc;
+package shcm.shsupercm.forge.shcmbackupreborn.common.misc;
 
 public class Reference {
     public static final String PATH_ROOT_BACKUPS = "\\backups";

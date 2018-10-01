@@ -1,4 +1,4 @@
-package SHCM.SHsuperCM.forge.shcmbackupreborn;
+package shcm.shsupercm.forge.shcmbackupreborn;
 
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;

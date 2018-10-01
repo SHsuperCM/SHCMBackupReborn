@@ -1,6 +1,6 @@
-package SHCM.SHsuperCM.forge.shcmbackupreborn.client.gui;
+package shcm.shsupercm.forge.shcmbackupreborn.client;
 
-import SHCM.SHsuperCM.forge.shcmbackupreborn.SHCMBackupReborn;
+import shcm.shsupercm.forge.shcmbackupreborn.SHCMBackupReborn;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.world.storage.WorldSummary;
@@ -20,7 +20,7 @@ import static net.minecraftforge.fml.relauncher.ReflectionHelper.findField;
 
 @SideOnly(Side.CLIENT)
 @Mod.EventBusSubscriber(Side.CLIENT)
-public class GuiWorldSelectionInjector {
+public class InjectorGuiWorldSelection {
     private static GuiButton button;
 
     public static Injectors.IGuiInjector guiInjector;
@@ -42,11 +42,9 @@ public class GuiWorldSelectionInjector {
 
     public static class Injectors {
         public static IGuiInjector getSuggestedGuiInjector() {
-            if(Loader.isModLoaded("openterraingenerator")) {
-                return new Injectors.InjectorOTG();
-            }
+            if(Loader.isModLoaded("openterraingenerator")) return new InjectorOpenTerrainGenerator();
 
-            return new Injectors.InjectorVanilla();
+            return new InjectorVanilla();
         }
 
         public interface IGuiInjector {
@@ -92,13 +90,13 @@ public class GuiWorldSelectionInjector {
             }
         }
 
-        public static class InjectorOTG implements IGuiInjector {
+        public static class InjectorOpenTerrainGenerator implements IGuiInjector {
             private Class OTGGuiWorldSelection;
             private Field OTGGuiWorldSelection_selectionList;
             private Method OTGGuiListWorldSelection_getSelectedWorld;
             private Field OTGGuiListWorldSelectionEntry_worldSummary;
 
-            InjectorOTG() {
+            InjectorOpenTerrainGenerator() {
                 try {
                     OTGGuiWorldSelection = Class.forName("com.pg85.otg.forge.gui.OTGGuiWorldSelection");
                     (OTGGuiWorldSelection_selectionList = OTGGuiWorldSelection.getDeclaredField("selectionList")).setAccessible(true);
@@ -132,5 +130,6 @@ public class GuiWorldSelectionInjector {
                 }
             }
         }
+
     }
 }

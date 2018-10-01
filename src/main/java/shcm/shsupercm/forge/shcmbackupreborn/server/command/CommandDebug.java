@@ -1,4 +1,4 @@
-package SHCM.SHsuperCM.forge.shcmbackupreborn.server.command;
+package shcm.shsupercm.forge.shcmbackupreborn.server.command;
 
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
