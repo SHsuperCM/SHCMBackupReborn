@@ -11,6 +11,8 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.InvalidPathException;
 
 public class BackupsHandler {
 
@@ -31,7 +33,7 @@ public class BackupsHandler {
         return worldProfile;
     }
 
-    public static boolean backup(File directory, String comment) {
+    public static boolean backup(File directory, String comment) throws InvalidPathException {
         MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
         long start = System.currentTimeMillis();
         boolean ingame = WorldProfile.currentWorldProfile != null;
@@ -49,19 +51,35 @@ public class BackupsHandler {
 
                 oldSaveStates[i] = worldServer.disableLevelSaving;
 
+                worldServer.disableLevelSaving = true;
+
                 try {
                     worldServer.saveAllChunks(true, null);
                     worldServer.flush();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
-                worldServer.disableLevelSaving = true;
             }
         }
         long datetimeEpoch = System.currentTimeMillis();
         String datetime = new java.text.SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new java.util.Date());
         File backupDestination = new File(directory, Reference.PATH_ROOT_BACKUPS + "\\" + datetime + "_" + comment);
+
+        try {
+            backupDestination.toPath();
+        } catch (InvalidPathException e) {
+            if(ingame) {
+                for (int i = 0; i < oldSaveStates.length; i++) {
+                    WorldServer worldServer = server.worlds[i];
+
+                    if (worldServer != null)
+                        worldServer.disableLevelSaving = oldSaveStates[i];
+                }
+            }
+            throw e;
+        }
+
+        backupDestination.delete();
 
         boolean o = FileUtils.zip(directory,backupDestination, false, file -> !file.getAbsolutePath().endsWith(Reference.PATH_ROOT_BACKUPS));
 

@@ -6,6 +6,7 @@ chat.shcmbackupreborn.backup.endbackup=Finished backing up world in %sms with th
 chat.shcmbackupreborn.backup.endbackupfailed=Failed to back up world, Please report this
 
 chat.shcmbackupreborn.backup.usage=backup(bk) [comment]
+chat.shcmbackupreborn.backup.usage.comment=The comment has some illegal filename characters
 
 chat.shcmbackupreborn.shcmbackupreborn.usage=shcmbackupreborn(backups)
 chat.shcmbackupreborn.shcmbackupreborn.usage0=Usage for the shcmbackupreborn command:

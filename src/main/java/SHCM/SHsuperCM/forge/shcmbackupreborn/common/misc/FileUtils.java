@@ -1,7 +1,5 @@
 package SHCM.SHsuperCM.forge.shcmbackupreborn.common.misc;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

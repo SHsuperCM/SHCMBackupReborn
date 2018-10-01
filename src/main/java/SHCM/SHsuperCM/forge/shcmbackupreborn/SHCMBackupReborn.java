@@ -48,14 +48,14 @@ public class SHCMBackupReborn {
     }
 
     @Mod.EventHandler
-    public void init(FMLServerStartedEvent event) {
+    public void serverStart(FMLServerStartedEvent event) {
         WorldProfile profile = BackupsHandler.validateWorldProfile(FMLCommonHandler.instance().getMinecraftServerInstance().worlds[0].getSaveHandler().getWorldDirectory());
 
         WorldProfile.currentWorldProfile = profile;
     }
 
     @Mod.EventHandler
-    public void stop(FMLServerStoppingEvent event) {
+    public void serverStop(FMLServerStoppingEvent event) {
         WorldProfile.currentWorldProfile = null;
     }
 }
