@@ -1,5 +1,8 @@
 package shcm.shsupercm.forge.shcmbackupreborn.server;
 
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import shcm.shsupercm.forge.shcmbackupreborn.SHCMBackupReborn;
 import shcm.shsupercm.forge.shcmbackupreborn.common.misc.Reference;
 import shcm.shsupercm.forge.shcmbackupreborn.common.misc.FileUtils;
@@ -12,8 +15,16 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import java.io.File;
 import java.nio.file.InvalidPathException;
+import java.util.Arrays;
+import java.util.List;
 
+@Mod.EventBusSubscriber
 public class BackupsHandler {
+
+    @SubscribeEvent
+    public static void tick(TickEvent.ServerTickEvent event) {
+        AutoBackup.tick();
+    }
 
     public static WorldProfile validateWorldProfile(File world) {
         if(!world.exists()) return null;
@@ -31,6 +42,8 @@ public class BackupsHandler {
 
         return worldProfile;
     }
+
+    private static boolean[] oldSaveStates;
 
     public static boolean backup(File directory, String comment) throws InvalidPathException {
         MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
@@ -90,6 +103,14 @@ public class BackupsHandler {
         worldProfile.lastBackup = datetimeEpoch;
         worldProfile.writeFile();
 
+        List<File> backups = Arrays.asList(new File(directory, Reference.PATH_ROOT_BACKUPS).listFiles());
+        backups.removeIf(file -> !file.getAbsolutePath().endsWith(Reference.PATH_WORLDPROFILE));
+        if(worldProfile.trimMaxBackups != 0 && backups.size() > worldProfile.trimMaxBackups) {
+            new Thread(() -> {
+
+            }).start();
+        }
+
         if(ingame) {
             WorldProfile.currentWorldProfile = worldProfile;
             for (int i = 0; i < oldSaveStates.length; i++) {
@@ -103,5 +124,16 @@ public class BackupsHandler {
         return o;
     }
 
-    private static boolean[] oldSaveStates;
+    private static class AutoBackup {
+        private static void tick() {
+            if(WorldProfile.currentWorldProfile != null && WorldProfile.currentWorldProfile.lastBackup != -1 && WorldProfile.currentWorldProfile.autoBackupInterval > 0 && System.currentTimeMillis() - WorldProfile.currentWorldProfile.lastBackup >= WorldProfile.currentWorldProfile.autoBackupInterval)
+                backup(WorldProfile.currentWorldProfile.file.getParentFile().getParentFile(),"gui.shcmbackupreborn.scheduled");
+        }
+    }
+
+    private static class AutoTrim {
+        private static void tryTrim() {
+
+        }
+    }
 }
