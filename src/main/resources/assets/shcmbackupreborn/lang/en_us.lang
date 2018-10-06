@@ -4,6 +4,7 @@ gui.shcmbackupreborn.scheduled=Scheduled
 chat.shcmbackupreborn.backup.startbackup=Starting to back up the world (will lag a bit!)
 chat.shcmbackupreborn.backup.endbackup=Finished backing up world in %sms with the timestamp %s. "%s"
 chat.shcmbackupreborn.backup.endbackupfailed=Failed to back up world, Please report this
+chat.shcmbackupreborn.backup.starttrim=A backups trim is about to happen (will lag quite a bit!)
 
 chat.shcmbackupreborn.backup.usage=backup(bk) [comment]
 chat.shcmbackupreborn.backup.usage.comment=The comment has some illegal filename characters

@@ -3,6 +3,7 @@ package shcm.shsupercm.forge.shcmbackupreborn.server;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import shcm.shsupercm.forge.shcmbackupreborn.Config;
 import shcm.shsupercm.forge.shcmbackupreborn.SHCMBackupReborn;
 import shcm.shsupercm.forge.shcmbackupreborn.common.misc.Reference;
 import shcm.shsupercm.forge.shcmbackupreborn.common.misc.FileUtils;
@@ -50,7 +51,7 @@ public class BackupsHandler {
         long start = System.currentTimeMillis();
         boolean ingame = WorldProfile.currentWorldProfile != null;
 
-        if(ingame) {
+        if (ingame) {
             server.getPlayerList().sendMessage(new TextComponentTranslation("chat.shcmbackupreborn.backup.startbackup"));
 
             server.getPlayerList().saveAllPlayerData();
@@ -80,7 +81,7 @@ public class BackupsHandler {
         try {
             backupDestination.toPath();
         } catch (InvalidPathException e) {
-            if(ingame) {
+            if (ingame) {
                 for (int i = 0; i < oldSaveStates.length; i++) {
                     WorldServer worldServer = server.worlds[i];
 
@@ -93,25 +94,24 @@ public class BackupsHandler {
 
         backupDestination.delete();
 
-        boolean o = FileUtils.zip(directory,backupDestination, false, file -> !file.getAbsolutePath().endsWith(Reference.PATH_ROOT_BACKUPS));
+        boolean o = FileUtils.zip(directory, backupDestination, false, file -> !file.getAbsolutePath().endsWith(Reference.PATH_ROOT_BACKUPS));
 
-        if(o)
+        if (o)
             SHCMBackupReborn.logger.info("Backed up the world to " + backupDestination.getAbsolutePath());
 
         WorldProfile worldProfile = new WorldProfile();
-        worldProfile.readFile(new File(directory,Reference.PATH_WORLDPROFILE));
+        worldProfile.readFile(new File(directory, Reference.PATH_WORLDPROFILE));
         worldProfile.lastBackup = datetimeEpoch;
         worldProfile.writeFile();
 
-        List<File> backups = Arrays.asList(new File(directory, Reference.PATH_ROOT_BACKUPS).listFiles());
-        backups.removeIf(file -> !file.getAbsolutePath().endsWith(Reference.PATH_WORLDPROFILE));
-        if(worldProfile.trimMaxBackups != 0 && backups.size() > worldProfile.trimMaxBackups) {
-            new Thread(() -> {
-
-            }).start();
+        File[] fArr = new File(directory, Reference.PATH_ROOT_BACKUPS).listFiles();
+        if (fArr != null && worldProfile.trimMaxBackups != 0 && fArr.length > 1 && fArr.length - 1 > worldProfile.trimMaxBackups) {
+            if (ingame)
+                server.getPlayerList().sendMessage(new TextComponentTranslation("chat.shcmbackupreborn.backup.starttrim"));
+            new Thread(new TrimRunnable(worldProfile)).start();
         }
 
-        if(ingame) {
+        if (ingame) {
             WorldProfile.currentWorldProfile = worldProfile;
             for (int i = 0; i < oldSaveStates.length; i++) {
                 WorldServer worldServer = server.worlds[i];
@@ -119,6 +119,7 @@ public class BackupsHandler {
                 if (worldServer != null)
                     worldServer.disableLevelSaving = oldSaveStates[i];
             }
+
             server.getPlayerList().sendMessage(o ? new TextComponentTranslation("chat.shcmbackupreborn.backup.endbackup", (System.currentTimeMillis() - start), datetime, comment.equals("gui.shcmbackupreborn.scheduled") ? I18n.format("gui.shcmbackupreborn.scheduled") : comment) : new TextComponentTranslation("chat.shcmbackupreborn.backup.endbackupfailed"));
         }
         return o;
@@ -130,10 +131,16 @@ public class BackupsHandler {
                 backup(WorldProfile.currentWorldProfile.file.getParentFile().getParentFile(),"gui.shcmbackupreborn.scheduled");
         }
     }
+    private static class TrimRunnable implements Runnable {
+        final WorldProfile worldProfile;
 
-    private static class AutoTrim {
-        private static void tryTrim() {
+        public TrimRunnable(WorldProfile worldProfile) {
+            this.worldProfile = worldProfile;
+        }
 
+        @Override
+        public void run() {
+            worldProfile.trim();
         }
     }
 }

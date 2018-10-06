@@ -10,11 +10,22 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class Config {
     @net.minecraftforge.common.config.Config.Name("Archive save path")
     @net.minecraftforge.common.config.Config.Comment({
-            "If a world has chosen \'archive_on_threshold\' as the trim,",
-            "behavior once it has reached the limit of backups all backups",
-            "would be zipped up and moved to this path. In addition, the",
-            "file \"[the path]\\archive.bat\" will run if it exists."})
+            "If a world has chosen \'archive_on_threshold\' as the trim",
+            "behavior, once it has reached the limit of backups all backups",
+            "would be zipped up and moved to this path."})
     public static String archive_save_path = "C:\\Archived Minecraft Backups";
+
+    @net.minecraftforge.common.config.Config.Name("Say backups in chat")
+    @net.minecraftforge.common.config.Config.Comment({
+            "Client only config for the backups chat message.",
+            "Does not block error messages!"})
+    public static boolean chatBackups = true;
+
+    @net.minecraftforge.common.config.Config.Name("Say trims in chat")
+    @net.minecraftforge.common.config.Config.Comment({
+            "Client only config for the trims chat message.",
+            "Does not block error messages!"})
+    public static boolean chatTrims = true;
 
     @SubscribeEvent
     public static void SyncConfig(ConfigChangedEvent event) {

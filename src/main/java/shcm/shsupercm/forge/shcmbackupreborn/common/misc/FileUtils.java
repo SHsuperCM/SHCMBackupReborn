@@ -13,8 +13,10 @@ public class FileUtils {
 
     public static boolean zip(File fileToZip, File zipDestination, boolean includeRoot, Predicate<File> filter) {
         try {
+            zipDestination.getParentFile().mkdirs();
             FileOutputStream fos = new FileOutputStream(zipDestination);
             ZipOutputStream zipOut = new ZipOutputStream(fos);
+
 
             zipFile(fileToZip, fileToZip.getName(), zipOut, includeRoot, filter);
 

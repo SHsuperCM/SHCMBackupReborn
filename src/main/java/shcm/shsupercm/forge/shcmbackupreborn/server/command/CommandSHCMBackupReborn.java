@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CommandSHCMBackupReborn extends CommandBase {
     @Override
@@ -77,14 +78,14 @@ public class CommandSHCMBackupReborn extends CommandBase {
                         switch(args[1]) {
                             case "behavior":
                                 if (args.length >= 3) {
-                                    if ((args[2].equals("delete_excess") || args[2].equals("archive_on_threshold"))) {
-                                        WorldProfile.currentWorldProfile.trimBehavior = args[2];
+                                    if(WorldProfile.TrimBehavior.valueNames.contains(args[2])) {
+                                        WorldProfile.currentWorldProfile.trimBehavior = WorldProfile.TrimBehavior.valueOf(args[2]);
                                         WorldProfile.currentWorldProfile.writeFile();
-                                        sender.sendMessage(new TextComponentTranslation("chat.shcmbackupreborn.shcmbackupreborn.set", args[0] + "_" + args[1], WorldProfile.currentWorldProfile.trimBehavior));
+                                        sender.sendMessage(new TextComponentTranslation("chat.shcmbackupreborn.shcmbackupreborn.set", args[0] + "_" + args[1], WorldProfile.currentWorldProfile.trimBehavior.name()));
                                         return;
                                     }
                                 } else {
-                                    sender.sendMessage(new TextComponentTranslation("chat.shcmbackupreborn.shcmbackupreborn.is",args[0] + "_" + args[1], WorldProfile.currentWorldProfile.trimBehavior));
+                                    sender.sendMessage(new TextComponentTranslation("chat.shcmbackupreborn.shcmbackupreborn.is",args[0] + "_" + args[1], WorldProfile.currentWorldProfile.trimBehavior.name()));
                                     return;
                                 }
                                 throw new WrongUsageException(this.getUsage(sender));
