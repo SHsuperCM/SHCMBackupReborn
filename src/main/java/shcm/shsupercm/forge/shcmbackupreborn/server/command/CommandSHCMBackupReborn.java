@@ -123,7 +123,7 @@ public class CommandSHCMBackupReborn extends CommandBase {
         sender.sendMessage(text);
         text = new TextComponentTranslation("chat.shcmbackupreborn.shcmbackupreborn.usage2");
         sender.sendMessage(text);
-        text = new TextComponentTranslation("chat.shcmbackupreborn.shcmbackupreborn.usage3");
+        text = new TextComponentTranslation("chat.shcmbackupreborn.shcmbackupreborn.usage3",String.join("|", WorldProfile.TrimBehavior.valueNames));
         text.getStyle().setColor(TextFormatting.GOLD);
         sender.sendMessage(text);
         text = new TextComponentTranslation("chat.shcmbackupreborn.shcmbackupreborn.usage4");
