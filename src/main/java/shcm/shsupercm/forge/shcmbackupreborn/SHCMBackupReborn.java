@@ -12,6 +12,8 @@ import shcm.shsupercm.forge.shcmbackupreborn.common.CommonProxy;
 import net.minecraftforge.fml.common.event.*;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
+
 @Mod(modid = SHCMBackupReborn.MODID)
 public class SHCMBackupReborn {
     public static final String MODID = "shcmbackupreborn";
@@ -48,9 +50,16 @@ public class SHCMBackupReborn {
 
     @Mod.EventHandler
     public void serverStart(FMLServerStartedEvent event) {
-        WorldProfile profile = BackupsHandler.validateWorldProfile(FMLCommonHandler.instance().getMinecraftServerInstance().worlds[0].getSaveHandler().getWorldDirectory());
+        File directory = new File(FMLCommonHandler.instance().getSavesDirectory(), FMLCommonHandler.instance().getMinecraftServerInstance().getFolderName());
 
-        WorldProfile.currentWorldProfile = profile;
+        WorldProfile.currentWorldProfile = BackupsHandler.validateWorldProfile(directory);
+    }
+
+    @Mod.EventHandler
+    public void serverAboutToStart(FMLServerAboutToStartEvent event) {
+        File directory = new File(FMLCommonHandler.instance().getSavesDirectory(), event.getServer().getFolderName());
+
+
     }
 
     @Mod.EventHandler

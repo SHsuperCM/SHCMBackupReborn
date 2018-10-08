@@ -9,6 +9,9 @@ import shcm.shsupercm.forge.shcmbackupreborn.common.CommonProxy;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import shcm.shsupercm.forge.shcmbackupreborn.server.RestoreHandler;
+
+import java.io.File;
 
 @SideOnly(Side.CLIENT)
 @Mod.EventBusSubscriber(Side.CLIENT)
@@ -28,5 +31,10 @@ public class ClientProxy extends CommonProxy {
                 (!Config.chatBackups && message.getKey().equals("chat.shcmbackupreborn.backup.endbackup")) ||
                 (!Config.chatTrims &&   message.getKey().equals("chat.shcmbackupreborn.backup.starttrim")))
             event.setCanceled(true);
+    }
+
+    @Override
+    public boolean tryRestore(File worldDirectory, String backup, boolean running) {
+        return RestoreHandler.tryRestore(Side.CLIENT,running,worldDirectory,backup);
     }
 }
