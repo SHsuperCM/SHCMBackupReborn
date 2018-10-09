@@ -1,5 +1,6 @@
 package shcm.shsupercm.forge.shcmbackupreborn;
 
+import net.minecraftforge.fml.server.FMLServerHandler;
 import shcm.shsupercm.forge.shcmbackupreborn.common.storage.WorldProfile;
 import shcm.shsupercm.forge.shcmbackupreborn.server.BackupsHandler;
 import shcm.shsupercm.forge.shcmbackupreborn.server.command.CommandBackup;
@@ -13,6 +14,7 @@ import net.minecraftforge.fml.common.event.*;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.io.IOException;
 
 @Mod(modid = SHCMBackupReborn.MODID)
 public class SHCMBackupReborn {
@@ -65,5 +67,17 @@ public class SHCMBackupReborn {
     @Mod.EventHandler
     public void serverStop(FMLServerStoppingEvent event) {
         WorldProfile.currentWorldProfile = null;
+    }
+
+    @Mod.EventHandler
+    public void serverStop(FMLServerStoppedEvent event) {
+        if(CommandDebug.shouldRestart) {
+            CommandDebug.shouldRestart = false;
+            try {
+                FMLServerHandler.instance().getServer().init();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

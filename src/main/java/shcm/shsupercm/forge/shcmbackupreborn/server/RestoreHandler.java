@@ -1,6 +1,7 @@
 package shcm.shsupercm.forge.shcmbackupreborn.server;
 
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.server.FMLServerHandler;
 
 import java.io.File;
 
@@ -20,6 +21,6 @@ public class RestoreHandler {
 
             }
         }
-
+        return false;
     }
 }
