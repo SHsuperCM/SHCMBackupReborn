@@ -47,7 +47,7 @@ public class WorldProfile extends Storage {public WorldProfile() {}
         trimBehavior.trim(file.getParentFile(),trimMaxBackups);
     }
 
-    public enum TrimBehavior {
+    public enum TrimBehavior { //You can contribute if you want by making a pr and adding more entries to the enum to register more behaviors
         delete_excess {
             @Override
             protected void onTrim(File backupsDirectory, List<File> files, int maxBackups) {
@@ -60,7 +60,7 @@ public class WorldProfile extends Storage {public WorldProfile() {}
             @Override
             protected void onTrim(File backupsDirectory, List<File> files, int maxBackups) throws IOException {
                 files.sort(Comparator.comparing(File::getName));
-                FileUtils.zip(backupsDirectory, new File(Config.archive_save_path, files.get(0).getName() + "---" + files.get(files.size()-1).getName() + ".zip"),false, f -> !f.getAbsolutePath().endsWith(Reference.PATH_WORLDPROFILE));
+                FileUtils.zip(backupsDirectory, new File(Config.archive_save_path + "\\" + backupsDirectory.getParentFile().getName(), files.get(0).getName() + "---" + files.get(files.size()-1).getName() + ".zip"),false, f -> !f.getAbsolutePath().endsWith(Reference.PATH_WORLDPROFILE));
                 files.forEach(File::delete);
             }
         };

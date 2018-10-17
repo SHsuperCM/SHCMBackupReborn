@@ -120,7 +120,7 @@ public class BackupsHandler {
                     worldServer.disableLevelSaving = oldSaveStates[i];
             }
 
-            server.getPlayerList().sendMessage(o ? new TextComponentTranslation("chat.shcmbackupreborn.backup.endbackup", (System.currentTimeMillis() - start), datetime, comment.equals("gui.shcmbackupreborn.scheduled") ? I18n.format("gui.shcmbackupreborn.scheduled") : comment) : new TextComponentTranslation("chat.shcmbackupreborn.backup.endbackupfailed"));
+            server.getPlayerList().sendMessage(o ? new TextComponentTranslation("chat.shcmbackupreborn.backup.endbackup", (System.currentTimeMillis() - start), datetime, comment.equals("misc.shcmbackupreborn.scheduled") ? I18n.format("misc.shcmbackupreborn.scheduled") : comment) : new TextComponentTranslation("chat.shcmbackupreborn.backup.endbackupfailed"));
         }
         return o;
     }
@@ -128,7 +128,7 @@ public class BackupsHandler {
     private static class AutoBackup {
         private static void tick() {
             if(WorldProfile.currentWorldProfile != null && WorldProfile.currentWorldProfile.lastBackup != -1 && WorldProfile.currentWorldProfile.autoBackupInterval > 0 && System.currentTimeMillis() - WorldProfile.currentWorldProfile.lastBackup >= WorldProfile.currentWorldProfile.autoBackupInterval)
-                backup(WorldProfile.currentWorldProfile.file.getParentFile().getParentFile(),"gui.shcmbackupreborn.scheduled");
+                backup(WorldProfile.currentWorldProfile.file.getParentFile().getParentFile(),"misc.shcmbackupreborn.scheduled");
         }
     }
     private static class TrimRunnable implements Runnable {

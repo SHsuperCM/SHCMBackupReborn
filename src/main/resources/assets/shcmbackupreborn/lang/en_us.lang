@@ -1,5 +1,7 @@
 gui.shcmbackupreborn.backups=Backups
-gui.shcmbackupreborn.scheduled=Scheduled
+
+misc.shcmbackupreborn.scheduled=Scheduled
+misc.shcmbackupreborn.serverrestorekick=The server is restoring a backup, might take a bit.
 
 chat.shcmbackupreborn.backup.startbackup=Starting to back up the world (will lag a bit!)
 chat.shcmbackupreborn.backup.endbackup=Finished backing up world in %sms with the timestamp %s. "%s"
