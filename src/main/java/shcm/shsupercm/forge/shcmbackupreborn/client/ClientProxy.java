@@ -32,9 +32,4 @@ public class ClientProxy extends CommonProxy {
                 (!Config.chatTrims &&   message.getKey().equals("chat.shcmbackupreborn.backup.starttrim")))
             event.setCanceled(true);
     }
-
-    @Override
-    public boolean tryRestore(File worldDirectory, String backup, boolean running) {
-        return RestoreHandler.tryRestore(Side.CLIENT,running,worldDirectory,backup);
-    }
 }

@@ -16,8 +16,6 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import java.io.File;
 import java.nio.file.InvalidPathException;
-import java.util.Arrays;
-import java.util.List;
 
 @Mod.EventBusSubscriber
 public class BackupsHandler {

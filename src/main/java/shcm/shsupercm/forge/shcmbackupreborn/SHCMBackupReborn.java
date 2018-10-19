@@ -60,6 +60,7 @@ public class SHCMBackupReborn {
     @Mod.EventHandler
     public void serverAboutToStart(FMLServerAboutToStartEvent event) {
         File directory = new File(FMLCommonHandler.instance().getSavesDirectory(), event.getServer().getFolderName());
+        WorldProfile worldProfile = BackupsHandler.validateWorldProfile(directory);
 
 
     }
@@ -67,17 +68,5 @@ public class SHCMBackupReborn {
     @Mod.EventHandler
     public void serverStop(FMLServerStoppingEvent event) {
         WorldProfile.currentWorldProfile = null;
-    }
-
-    @Mod.EventHandler
-    public void serverStop(FMLServerStoppedEvent event) {
-        if(CommandDebug.shouldRestart) {
-            CommandDebug.shouldRestart = false;
-            try {
-                FMLServerHandler.instance().getServer().init();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 }

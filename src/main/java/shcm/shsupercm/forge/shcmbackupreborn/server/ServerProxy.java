@@ -8,9 +8,4 @@ import java.io.File;
 
 @SideOnly(Side.SERVER)
 public class ServerProxy extends CommonProxy {
-
-    @Override
-    public boolean tryRestore(File worldDirectory, String backup, boolean running) {
-        return RestoreHandler.tryRestore(Side.SERVER,running,worldDirectory,backup);
-    }
 }
