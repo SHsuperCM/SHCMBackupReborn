@@ -4,15 +4,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.server.FMLServerHandler;
 import shcm.shsupercm.forge.shcmbackupreborn.SHCMBackupReborn;
 import shcm.shsupercm.forge.shcmbackupreborn.client.ClientProxy;
 import shcm.shsupercm.forge.shcmbackupreborn.client.gui.GuiRestore;
-import shcm.shsupercm.forge.shcmbackupreborn.common.misc.Reference;
-import shcm.shsupercm.forge.shcmbackupreborn.common.storage.RestoreRequest;
+import shcm.shsupercm.forge.shcmbackupreborn.common.misc.FileUtils;
+import shcm.shsupercm.forge.shcmbackupreborn.common.storage.WorldProfile;
 
 import java.io.File;
 
@@ -20,41 +17,46 @@ public class RestoreHandler {
     private static volatile Thread threadRestore;
     private static volatile boolean running = false;
     private static volatile File worldDirectory;
+    private static volatile String backup;
 
-    public static boolean tryRestore(boolean running, File worldDirectory, String backup) {
+    public static void tryRestore(boolean running, File worldDirectory, String backup) {
         if (running) {
             if (SHCMBackupReborn.PROXY instanceof ServerProxy) {
                 PlayerList playerList = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList();
                 for(EntityPlayerMP player : playerList.getPlayers())
                     player.connection.disconnect(new TextComponentTranslation("misc.shcmbackupreborn.serverrestorekick"));
 
-                new RestoreRequest(backup).writeFile(new File(worldDirectory, Reference.PATH_RESTOREREQUEST));
+                WorldProfile.currentWorldProfile.restoreBackup = backup;
+                WorldProfile.currentWorldProfile.writeFile();
 
                 FMLCommonHandler.instance().getMinecraftServerInstance().initiateShutdown();
-
-                return true;
             } else { // isClient
                 Minecraft.getMinecraft().loadWorld(null);
-                return tryRestore(false,worldDirectory,backup);
+                tryRestore(false,worldDirectory,backup);
             }
         } else { // !running
             threadRestore = new Thread(() -> {
-                HERE
+                //todo HERE
+
+                //FileUtils.unzip();
+                FileUtils.delete();
+
                 RestoreHandler.worldDirectory = null;
                 RestoreHandler.running = false;
                 RestoreHandler.threadRestore = null;
+                RestoreHandler.backup = null;
             });
             RestoreHandler.worldDirectory = worldDirectory;
             RestoreHandler.running = true;
+            RestoreHandler.backup = backup;
             threadRestore.start();
             if (SHCMBackupReborn.PROXY instanceof ClientProxy) {
                 Minecraft.getMinecraft().displayGuiScreen(new GuiRestore());
             } else {
-                while (running && !threadRestore.isInterrupted()) try {
+                while (RestoreHandler.running && !threadRestore.isInterrupted()) try {
                     Thread.sleep(100);
-                } catch (InterruptedException e) { }
+                } catch (InterruptedException ignored) { }
             }
         }
-        return false;
     }
 }

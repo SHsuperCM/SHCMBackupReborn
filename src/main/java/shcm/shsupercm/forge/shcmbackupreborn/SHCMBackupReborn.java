@@ -1,8 +1,8 @@
 package shcm.shsupercm.forge.shcmbackupreborn;
 
-import net.minecraftforge.fml.server.FMLServerHandler;
 import shcm.shsupercm.forge.shcmbackupreborn.common.storage.WorldProfile;
 import shcm.shsupercm.forge.shcmbackupreborn.server.BackupsHandler;
+import shcm.shsupercm.forge.shcmbackupreborn.server.RestoreHandler;
 import shcm.shsupercm.forge.shcmbackupreborn.server.command.CommandBackup;
 import shcm.shsupercm.forge.shcmbackupreborn.server.command.CommandDebug;
 import shcm.shsupercm.forge.shcmbackupreborn.server.command.CommandSHCMBackupReborn;
@@ -14,9 +14,9 @@ import net.minecraftforge.fml.common.event.*;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.Objects;
 
-@Mod(modid = SHCMBackupReborn.MODID)
+@Mod(modid = SHCMBackupReborn.MODID, acceptableRemoteVersions = "*")
 public class SHCMBackupReborn {
     public static final String MODID = "shcmbackupreborn";
     public static Logger logger;
@@ -61,8 +61,13 @@ public class SHCMBackupReborn {
     public void serverAboutToStart(FMLServerAboutToStartEvent event) {
         File directory = new File(FMLCommonHandler.instance().getSavesDirectory(), event.getServer().getFolderName());
         WorldProfile worldProfile = BackupsHandler.validateWorldProfile(directory);
+        Objects.requireNonNull(worldProfile);
 
-
+        if(!worldProfile.restoreBackup.isEmpty()) {
+            RestoreHandler.tryRestore(false, directory, worldProfile.restoreBackup);
+            worldProfile.restoreBackup = "";
+            worldProfile.writeFile();
+        }
     }
 
     @Mod.EventHandler

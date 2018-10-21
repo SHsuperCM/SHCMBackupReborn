@@ -17,11 +17,11 @@ import java.util.stream.Collectors;
 public class WorldProfile extends Storage {public WorldProfile() {}
     public static WorldProfile currentWorldProfile = null;
 
-
     public long autoBackupInterval = 0; //0 for disabled, >0 for millis interval
     public long lastBackup = -1; //when in epoch was the last backup
     public int trimMaxBackups = 0; //0 for disabled, >0 for max backups before trimming
-    public TrimBehavior trimBehavior = TrimBehavior.delete_excess;
+    public TrimBehavior trimBehavior = TrimBehavior.delete_excess; //how to act when passing the max amount of backups
+    public String restoreBackup = "";//empty is ignored, what backup to load before starting up the world
 
     @Override
     public NBTTagCompound serializeNBT() {
@@ -31,6 +31,7 @@ public class WorldProfile extends Storage {public WorldProfile() {}
         compound.setLong("lastBackup",lastBackup);
         compound.setInteger("trimMaxBackups", trimMaxBackups);
         compound.setString("trimBehavior", trimBehavior.name());
+        compound.setString("restoreBackup", restoreBackup);
 
         return compound;
     }
@@ -41,6 +42,7 @@ public class WorldProfile extends Storage {public WorldProfile() {}
         lastBackup = nbt.getLong("lastBackup");
         trimMaxBackups = nbt.getInteger("trimMaxBackups");
         trimBehavior = TrimBehavior.valueOf(nbt.getString("trimBehavior"));
+        restoreBackup = nbt.getString("restoreBackup");
     }
 
     public void trim() {

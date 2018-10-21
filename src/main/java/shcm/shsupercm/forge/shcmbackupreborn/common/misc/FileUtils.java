@@ -1,16 +1,26 @@
 package shcm.shsupercm.forge.shcmbackupreborn.common.misc;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import org.apache.logging.log4j.util.TriConsumer;
+
+import java.io.*;
 import java.util.function.Predicate;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class FileUtils {
-
+    /**
+     * Will zip {@code fileToZip} and any children files and save the zip in {@code zipDestination}.
+     * If {@code fileToZip} is directory will zip recursively all contents and if {@code includeRoot} will zip the directory as well.
+     * Will zip {@code fileToZip} or any of its children only if {@code filter} returns true.
+     *
+     * @param fileToZip
+     * @param zipDestination
+     * @param includeRoot
+     * @param filter
+     * @return
+     */
     public static boolean zip(File fileToZip, File zipDestination, boolean includeRoot, Predicate<File> filter) {
         try {
             zipDestination.getParentFile().mkdirs();
@@ -28,29 +38,77 @@ public class FileUtils {
         }
     }
 
-    public static boolean unzip(File zip, File destinationRootDirectory) {
-        try {
-            byte[] buffer = new byte[1024];
-            ZipInputStream zis = new ZipInputStream(new FileInputStream(zip));
-            ZipEntry zipEntry = zis.getNextEntry();
-            while (zipEntry != null) {
+    /**
+     * Will unzip {@code zip} file to {@code destDir} and report progress to {@code progressCallback}.
+     *
+     * @param zip
+     * @param destDir
+     * @param progressCallback
+     * @throws IOException
+     */
+    public static void unzip(File zip, File destDir, TriConsumer<Integer, Integer, String> progressCallback) throws IOException {
+        destDir.mkdirs();
 
-                FileOutputStream fos = new FileOutputStream(new File(destinationRootDirectory,zipEntry.getName()));
-                int len;
-                while ((len = zis.read(buffer)) > 0) {
-                    fos.write(buffer, 0, len);
+        ZipFile zipFile = new ZipFile(zip);
+        int max = zipFile.size(), cur = 0;
+        ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zip));
+        ZipEntry entry = zipIn.getNextEntry();
+
+        while (entry != null) {
+            progressCallback.accept(cur,max,entry.getName());
+            File file = new File(destDir.getAbsolutePath(), entry.getName());
+            if (entry.isDirectory())
+                destDir.mkdirs();
+            else {
+                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+                byte[] bytesIn = new byte[4096];
+                int read;
+                while ((read = zipIn.read(bytesIn)) != -1) {
+                    bos.write(bytesIn, 0, read);
                 }
-                fos.close();
-                zipEntry = zis.getNextEntry();
+                bos.close();
             }
-            zis.closeEntry();
-            zis.close();
-            return true;
-        } catch (IOException e) {
-            return false;
+            zipIn.closeEntry();
+            entry = zipIn.getNextEntry();
+            cur++;
+        }
+        zipIn.close();
+    }
+
+    /**
+     * Deletes {@code file}.
+     * If file is directory will delete recursively all contents and if {@code includeRoot} will delete the directory.
+     * Will delete file or any of its children only if {@code filter} returns true.
+     *
+     * @param file
+     * @param includeRoot
+     * @param filter
+     */
+    public static void delete(File file, boolean includeRoot, Predicate<File> filter) {
+        if(!filter.test(file)) return;
+        if(file.isDirectory()) {
+            File[] files = file.listFiles();
+            if(files != null)
+                for (File childFile : files)
+                    delete(childFile,true, filter);
+
+            if(includeRoot)
+                file.delete();
+        } else {
+            file.delete();
         }
     }
 
+    /**
+     * Recursively adds files to a {@code ZipOutputStream}
+     *
+     * @param fileToZip
+     * @param fileName
+     * @param zipOut
+     * @param includeRoot
+     * @param filter
+     * @throws IOException
+     */
     private static void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut, boolean includeRoot, Predicate<File> filter) throws IOException {
         if(!filter.test(fileToZip)) return;
         if (fileToZip.isDirectory()) {
@@ -62,11 +120,16 @@ public class FileUtils {
                     zipOut.putNextEntry(new ZipEntry(fileName + "/"));
                     zipOut.closeEntry();
                 }
-                for (File childFile : fileToZip.listFiles())
-                    zipFile(childFile, fileName + "/" + childFile.getName(), zipOut, true, filter);
-            } else
-                for (File childFile : fileToZip.listFiles())
-                    zipFile(childFile, childFile.getName(), zipOut, true, filter);
+                File[] files = fileToZip.listFiles();
+                if(files != null)
+                    for (File childFile : files)
+                        zipFile(childFile, fileName + "/" + childFile.getName(), zipOut, true, filter);
+            } else {
+                File[] files = fileToZip.listFiles();
+                if(files != null)
+                    for (File childFile : files)
+                        zipFile(childFile, childFile.getName(), zipOut, true, filter);
+            }
 
             return;
         }
@@ -79,5 +142,9 @@ public class FileUtils {
             zipOut.write(bytes, 0, length);
         }
         fis.close();
+    }
+
+    public static void main(String[] args) {
+        delete(new File("C:\\Users\\שחר\\Desktop\\Forge Modding\\Focused EnvIronMent\\SHCMBackupReborn\\run\\saves\\New World - Copy"),false,file -> !file.getAbsolutePath().endsWith(Reference.PATH_ROOT_BACKUPS));
     }
 }
