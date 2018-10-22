@@ -143,8 +143,4 @@ public class FileUtils {
         }
         fis.close();
     }
-
-    public static void main(String[] args) {
-        delete(new File("C:\\Users\\שחר\\Desktop\\Forge Modding\\Focused EnvIronMent\\SHCMBackupReborn\\run\\saves\\New World - Copy"),false,file -> !file.getAbsolutePath().endsWith(Reference.PATH_ROOT_BACKUPS));
-    }
 }
