@@ -21,7 +21,6 @@ public class WorldProfile extends Storage {public WorldProfile() {}
     public long lastBackup = -1; //when in epoch was the last backup
     public int trimMaxBackups = 0; //0 for disabled, >0 for max backups before trimming
     public TrimBehavior trimBehavior = TrimBehavior.delete_excess; //how to act when passing the max amount of backups
-    public String restoreBackup = "";//empty is ignored, what backup to load before starting up the world
 
     @Override
     public NBTTagCompound serializeNBT() {
@@ -31,7 +30,6 @@ public class WorldProfile extends Storage {public WorldProfile() {}
         compound.setLong("lastBackup",lastBackup);
         compound.setInteger("trimMaxBackups", trimMaxBackups);
         compound.setString("trimBehavior", trimBehavior.name());
-        compound.setString("restoreBackup", restoreBackup);
 
         return compound;
     }
@@ -42,7 +40,6 @@ public class WorldProfile extends Storage {public WorldProfile() {}
         lastBackup = nbt.getLong("lastBackup");
         trimMaxBackups = nbt.getInteger("trimMaxBackups");
         trimBehavior = TrimBehavior.valueOf(nbt.getString("trimBehavior"));
-        restoreBackup = nbt.getString("restoreBackup");
     }
 
     public void trim() {
@@ -65,7 +62,7 @@ public class WorldProfile extends Storage {public WorldProfile() {}
                 FileUtils.zip(backupsDirectory, new File(Config.archive_save_path + "\\" + backupsDirectory.getParentFile().getName(), files.get(0).getName() + "---" + files.get(files.size()-1).getName() + ".zip"),false, f -> !f.getAbsolutePath().endsWith(Reference.PATH_WORLDPROFILE));
                 files.forEach(File::delete);
             }
-        };//TODO add upload to cloud behavior
+        };//TODO add upload to cloud/ftp behavior
 
         public static final List<String> valueNames = Arrays.stream(values()).map(Enum::name).collect(Collectors.toList());
 

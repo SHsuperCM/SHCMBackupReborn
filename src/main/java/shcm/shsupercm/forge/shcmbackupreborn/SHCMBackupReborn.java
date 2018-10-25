@@ -3,6 +3,7 @@ package shcm.shsupercm.forge.shcmbackupreborn;
 import shcm.shsupercm.forge.shcmbackupreborn.common.storage.WorldProfile;
 import shcm.shsupercm.forge.shcmbackupreborn.server.BackupsHandler;
 import shcm.shsupercm.forge.shcmbackupreborn.server.RestoreHandler;
+import shcm.shsupercm.forge.shcmbackupreborn.server.ServerProxy;
 import shcm.shsupercm.forge.shcmbackupreborn.server.command.CommandBackup;
 import shcm.shsupercm.forge.shcmbackupreborn.server.command.CommandDebug;
 import shcm.shsupercm.forge.shcmbackupreborn.server.command.CommandSHCMBackupReborn;
@@ -58,20 +59,13 @@ public class SHCMBackupReborn {
     }
 
     @Mod.EventHandler
-    public void serverAboutToStart(FMLServerAboutToStartEvent event) {
-        File directory = new File(FMLCommonHandler.instance().getSavesDirectory(), event.getServer().getFolderName());
-        WorldProfile worldProfile = BackupsHandler.validateWorldProfile(directory);
-        Objects.requireNonNull(worldProfile);
-
-        if(!worldProfile.restoreBackup.isEmpty()) {
-            RestoreHandler.tryRestore(false, directory, worldProfile.restoreBackup);
-            worldProfile.restoreBackup = "";
-            worldProfile.writeFile();
-        }
+    public void serverStop(FMLServerStoppingEvent event) {
+        WorldProfile.currentWorldProfile = null;
     }
 
     @Mod.EventHandler
-    public void serverStop(FMLServerStoppingEvent event) {
-        WorldProfile.currentWorldProfile = null;
+    public void serverStop(FMLServerStoppedEvent event) {
+        if(PROXY instanceof ServerProxy)
+            RestoreHandler.tryRestore(false,null,null);
     }
 }

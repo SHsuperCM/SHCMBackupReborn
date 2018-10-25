@@ -22,7 +22,7 @@ public class CommandSHCMBackupReborn extends CommandBase {
 
     @Override
     public List<String> getAliases() {
-        return Arrays.asList("backups");
+        return Arrays.asList("backups","bks");
     }
 
     @Override

@@ -10,7 +10,6 @@ import shcm.shsupercm.forge.shcmbackupreborn.client.ClientProxy;
 import shcm.shsupercm.forge.shcmbackupreborn.client.gui.GuiRestore;
 import shcm.shsupercm.forge.shcmbackupreborn.common.misc.FileUtils;
 import shcm.shsupercm.forge.shcmbackupreborn.common.misc.Reference;
-import shcm.shsupercm.forge.shcmbackupreborn.common.storage.WorldProfile;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,22 +17,22 @@ import java.io.IOException;
 public class RestoreHandler {
     private static volatile Thread threadRestore;
     private static volatile int running = 0,
-                                curProgress,
-                                maxProgress;
-    private static volatile File worldDirectory;
-    private static volatile String backup,
-                                   curFile;
+                                curProgress = 0,
+                                maxProgress = 0;
+    private static volatile File worldDirectory = null;
+    private static volatile String backup = null,
+                                   curFile = "";
 
     public static synchronized void tryRestore(boolean running, File worldDirectory, String backup) throws AssertionError{
-        assert new File(worldDirectory,Reference.PATH_ROOT_BACKUPS + File.separatorChar + backup).exists();
+        assert (RestoreHandler.worldDirectory != null && RestoreHandler.backup != null) || new File(worldDirectory,Reference.PATH_ROOT_BACKUPS + File.separatorChar + backup).exists();
         if (running) {
             if (SHCMBackupReborn.PROXY instanceof ServerProxy) {
                 PlayerList playerList = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList();
                 for(EntityPlayerMP player : playerList.getPlayers())
                     player.connection.disconnect(new TextComponentTranslation("misc.shcmbackupreborn.serverrestorekick"));
 
-                WorldProfile.currentWorldProfile.restoreBackup = backup;
-                WorldProfile.currentWorldProfile.writeFile();
+                RestoreHandler.worldDirectory = worldDirectory;
+                RestoreHandler.backup = backup;
 
                 FMLCommonHandler.instance().getMinecraftServerInstance().initiateShutdown();
             } else { // isClient
@@ -41,8 +40,19 @@ public class RestoreHandler {
                 tryRestore(false,worldDirectory,backup);
             }
         } else { // !running
+            if(worldDirectory == null && backup == null) {
+                if(RestoreHandler.worldDirectory == null || RestoreHandler.backup == null)
+                    return;
+            } else {
+                RestoreHandler.worldDirectory = worldDirectory;
+                RestoreHandler.backup = backup;
+            }
             threadRestore = new Thread(() -> {
                 RestoreHandler.running = 1;
+
+                RestoreHandler.curProgress = 1;
+                RestoreHandler.maxProgress = 0;
+                RestoreHandler.curFile = "deleting";
 
                 FileUtils.delete(RestoreHandler.worldDirectory,false,file -> !file.getAbsolutePath().endsWith(Reference.PATH_ROOT_BACKUPS));
 
@@ -52,6 +62,9 @@ public class RestoreHandler {
                         RestoreHandler.maxProgress = maxprogress;
                         RestoreHandler.curFile = file;
                     });
+                    RestoreHandler.curProgress = 1;
+                    RestoreHandler.maxProgress = 0;
+                    RestoreHandler.curFile = "";
                     RestoreHandler.running = 0;
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -62,8 +75,6 @@ public class RestoreHandler {
                 RestoreHandler.threadRestore = null;
                 RestoreHandler.backup = null;
             });
-            RestoreHandler.worldDirectory = worldDirectory;
-            RestoreHandler.backup = backup;
             threadRestore.start();
             if (SHCMBackupReborn.PROXY instanceof ClientProxy) {
                 Minecraft.getMinecraft().displayGuiScreen(new GuiRestore());
