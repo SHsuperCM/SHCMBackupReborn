@@ -13,6 +13,8 @@ import shcm.shsupercm.forge.shcmbackupreborn.common.misc.Reference;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RestoreHandler {
     private static volatile Thread threadRestore;
@@ -23,7 +25,7 @@ public class RestoreHandler {
     private static volatile String backup = null,
                                    curFile = "";
 
-    public static synchronized void tryRestore(boolean running, File worldDirectory, String backup) throws AssertionError{
+    public static synchronized void tryRestore(boolean running, File worldDirectory, String backup) throws AssertionError {
         assert (RestoreHandler.worldDirectory != null && RestoreHandler.backup != null) || new File(worldDirectory,Reference.PATH_ROOT_BACKUPS + File.separatorChar + backup).exists();
         if (running) {
             if (SHCMBackupReborn.PROXY instanceof ServerProxy) {
@@ -84,5 +86,19 @@ public class RestoreHandler {
                 } catch (InterruptedException ignored) { }
             }
         }
+    }
+
+    public static List<String> getBackupsList(File worldDirectory) {
+        List<String> list = new ArrayList<>();
+
+        File[] files = new File(worldDirectory, Reference.PATH_ROOT_BACKUPS).listFiles();
+        if (files != null)
+            for (File file : files)
+                if (!file.getAbsolutePath().endsWith(Reference.PATH_WORLDPROFILE))
+                    list.add(file.getName());
+
+        list.sort(String::compareTo);
+
+        return list;
     }
 }

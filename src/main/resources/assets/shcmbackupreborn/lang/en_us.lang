@@ -11,6 +11,13 @@ chat.shcmbackupreborn.backup.starttrim=A backups trim is about to happen (will l
 chat.shcmbackupreborn.backup.usage=backup(bk) [comment]
 chat.shcmbackupreborn.backup.usage.comment=The comment has some illegal filename characters
 
+chat.shcmbackupreborn.shcmbackupreborn.restore.list=List of all available restoration points:
+chat.shcmbackupreborn.shcmbackupreborn.restore.nobackup=No such backup available %s.
+chat.shcmbackupreborn.shcmbackupreborn.restore.confirm=Please confirm restoring of world from backup %s by resending the command(will delete the current world and load the specified backup).
+chat.shcmbackupreborn.shcmbackupreborn.restore.restoring=Starting to restore world from %s.
+
+chat.shcmbackupreborn.shcmbackupreborn.behavior.nobehavior=No such trim behavior %s.
+
 chat.shcmbackupreborn.shcmbackupreborn.usage=shcmbackupreborn(backups)
 chat.shcmbackupreborn.shcmbackupreborn.usage0=Usage for the shcmbackupreborn command:
 chat.shcmbackupreborn.shcmbackupreborn.usage1=/shcmbackupreborn(backups) auto_backup_interval <interval in minutes>

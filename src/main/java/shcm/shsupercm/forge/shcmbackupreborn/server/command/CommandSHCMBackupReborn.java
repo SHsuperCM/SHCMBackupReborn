@@ -1,5 +1,7 @@
 package shcm.shsupercm.forge.shcmbackupreborn.server.command;
 
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.event.ClickEvent;
 import shcm.shsupercm.forge.shcmbackupreborn.common.storage.WorldProfile;
 import net.minecraft.command.*;
 import net.minecraft.server.MinecraftServer;
@@ -7,14 +9,18 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentBase;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
+import shcm.shsupercm.forge.shcmbackupreborn.server.RestoreHandler;
 
 import javax.annotation.Nullable;
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class CommandSHCMBackupReborn extends CommandBase {
+    private static String restoreConfirm = null;
+
     @Override
     public String getName() {
         return "shcmbackupreborn";
@@ -34,6 +40,10 @@ public class CommandSHCMBackupReborn extends CommandBase {
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
         if(args.length >= 1 && !args[0].isEmpty())
             switch(args[0]) {
+                case "restore":
+                    if (args.length == 2)
+                        return Arrays.asList("list");
+                    break;
                 case "auto_backup_interval":
                     if (args.length == 2)
                         return Arrays.asList("15", "30", "60", "120", "300", "600");
@@ -49,7 +59,7 @@ public class CommandSHCMBackupReborn extends CommandBase {
                                 return Arrays.asList("10", "20", "30", "40", "50");
                         }
             }
-        else return Arrays.asList("auto_backup_interval", "trim");
+        else return Arrays.asList("restore", "auto_backup_interval", "trim");
         return Collections.emptyList();
     }
 
@@ -58,6 +68,44 @@ public class CommandSHCMBackupReborn extends CommandBase {
         assert WorldProfile.currentWorldProfile != null;
         if(args.length >= 1)
             switch(args[0]) {
+                case "restore":
+                    if(args.length >= 2) {
+                        if(args[1].equals("list")) {
+                            sender.sendMessage(new TextComponentTranslation("chat.shcmbackupreborn.restore.list"));
+                            TextComponentString output = new TextComponentString("");
+                            TextComponentString backupComponent = null;
+                            for(String backup : RestoreHandler.getBackupsList(WorldProfile.currentWorldProfile.file.getParentFile().getParentFile())) {
+                                if(backupComponent != null) {
+                                    output.appendText(", ");
+                                }
+                                backupComponent = new TextComponentString("[" + backup + "]");
+                                backupComponent.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/shcmbackupreborn restore " + backup));
+                                backupComponent.getStyle().setColor(TextFormatting.YELLOW);
+                                output.appendSibling(backupComponent);
+                            }
+                            output.appendText(".");
+                            sender.sendMessage(output);
+                            return;
+                        } else {
+                            if(new File(WorldProfile.currentWorldProfile.file.getParentFile(),args[1]).exists()) {
+                                if(args[1].equals(restoreConfirm)) {
+                                    sender.sendMessage(new TextComponentTranslation("chat.shcmbackupreborn.shcmbackupreborn.restore.restoring",restoreConfirm));
+                                    try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
+                                    RestoreHandler.tryRestore(true,WorldProfile.currentWorldProfile.file.getParentFile().getParentFile(),restoreConfirm);
+                                    return;
+                                } else {
+                                    restoreConfirm = args[1];//todo fix restore handler proxy checking
+                                    sender.sendMessage(new TextComponentTranslation("chat.shcmbackupreborn.shcmbackupreborn.restore.confirm", args[1]));
+                                    return;
+                                }
+                            } else {
+                                sender.sendMessage(new TextComponentTranslation("chat.shcmbackupreborn.shcmbackupreborn.restore.nobackup",args[1]));
+                                return;
+                            }
+                        }
+                    } else {
+                        throw new WrongUsageException(this.getUsage(sender));
+                    }
                 case "auto_backup_interval":
                     if(args.length >= 2) {
                         try {
@@ -83,12 +131,14 @@ public class CommandSHCMBackupReborn extends CommandBase {
                                         WorldProfile.currentWorldProfile.writeFile();
                                         sender.sendMessage(new TextComponentTranslation("chat.shcmbackupreborn.shcmbackupreborn.set", args[0] + "_" + args[1], WorldProfile.currentWorldProfile.trimBehavior.name()));
                                         return;
+                                    } else {
+                                        sender.sendMessage(new TextComponentTranslation("chat.shcmbackupreborn.shcmbackupreborn.behavior.nobehavior",args[2]));
+                                        return;
                                     }
                                 } else {
                                     sender.sendMessage(new TextComponentTranslation("chat.shcmbackupreborn.shcmbackupreborn.is",args[0] + "_" + args[1], WorldProfile.currentWorldProfile.trimBehavior.name()));
                                     return;
                                 }
-                                throw new WrongUsageException(this.getUsage(sender));
                             case "max_backups":
                                 if(args.length >= 3) {
                                     try {
