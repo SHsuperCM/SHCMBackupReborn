@@ -87,19 +87,20 @@ public class CommandSHCMBackupReborn extends CommandBase {
                             sender.sendMessage(output);
                             return;
                         } else {
-                            if(new File(WorldProfile.currentWorldProfile.file.getParentFile(),args[1]).exists()) {
-                                if(args[1].equals(restoreConfirm)) {
+                            String backup = buildString(args,1);
+                            if(new File(WorldProfile.currentWorldProfile.file.getParentFile(),backup).exists()) {
+                                if(backup.equals(restoreConfirm)) {
                                     sender.sendMessage(new TextComponentTranslation("chat.shcmbackupreborn.shcmbackupreborn.restore.restoring",restoreConfirm));
                                     try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
                                     RestoreHandler.tryRestore(true,WorldProfile.currentWorldProfile.file.getParentFile().getParentFile(),restoreConfirm);
                                     return;
                                 } else {
-                                    restoreConfirm = args[1];//todo fix restore handler proxy checking
-                                    sender.sendMessage(new TextComponentTranslation("chat.shcmbackupreborn.shcmbackupreborn.restore.confirm", args[1]));
+                                    restoreConfirm = backup;
+                                    sender.sendMessage(new TextComponentTranslation("chat.shcmbackupreborn.shcmbackupreborn.restore.confirm", backup));
                                     return;
                                 }
                             } else {
-                                sender.sendMessage(new TextComponentTranslation("chat.shcmbackupreborn.shcmbackupreborn.restore.nobackup",args[1]));
+                                sender.sendMessage(new TextComponentTranslation("chat.shcmbackupreborn.shcmbackupreborn.restore.nobackup",backup));
                                 return;
                             }
                         }

@@ -5,6 +5,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
 import shcm.shsupercm.forge.shcmbackupreborn.SHCMBackupReborn;
 import shcm.shsupercm.forge.shcmbackupreborn.client.ClientProxy;
 import shcm.shsupercm.forge.shcmbackupreborn.client.gui.GuiRestore;
@@ -28,18 +29,20 @@ public class RestoreHandler {
     public static synchronized void tryRestore(boolean running, File worldDirectory, String backup) throws AssertionError {
         assert (RestoreHandler.worldDirectory != null && RestoreHandler.backup != null) || new File(worldDirectory,Reference.PATH_ROOT_BACKUPS + File.separatorChar + backup).exists();
         if (running) {
-            if (SHCMBackupReborn.PROXY instanceof ServerProxy) {
+            if (SHCMBackupReborn.PROXY.getSide() == Side.SERVER) {
                 PlayerList playerList = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList();
                 for(EntityPlayerMP player : playerList.getPlayers())
                     player.connection.disconnect(new TextComponentTranslation("misc.shcmbackupreborn.serverrestorekick"));
 
-                RestoreHandler.worldDirectory = worldDirectory;
-                RestoreHandler.backup = backup;
+
 
                 FMLCommonHandler.instance().getMinecraftServerInstance().initiateShutdown();
             } else { // isClient
+                RestoreHandler.worldDirectory = worldDirectory;
+                RestoreHandler.backup = backup;
                 Minecraft.getMinecraft().loadWorld(null);
-                tryRestore(false,worldDirectory,backup);
+                //tryRestore(false,worldDirectory,backup);
+                //Todo fix creating the restore gui when working on ClientProxy from server thread
             }
         } else { // !running
             if(worldDirectory == null && backup == null) {
@@ -78,12 +81,15 @@ public class RestoreHandler {
                 RestoreHandler.backup = null;
             });
             threadRestore.start();
-            if (SHCMBackupReborn.PROXY instanceof ClientProxy) {
-                Minecraft.getMinecraft().displayGuiScreen(new GuiRestore());
-            } else {
+            if (SHCMBackupReborn.PROXY.getSide() == Side.SERVER) {
                 while (RestoreHandler.running == 1 && !threadRestore.isInterrupted()) try {
                     Thread.sleep(100);
                 } catch (InterruptedException ignored) { }
+
+                if(RestoreHandler.running == -1)
+                    SHCMBackupReborn.logger.error("There was an error while trying to restore the world from backups.");
+            } else {
+                Minecraft.getMinecraft().displayGuiScreen(new GuiRestore());
             }
         }
     }

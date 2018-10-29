@@ -8,4 +8,5 @@ import java.io.File;
 
 @SideOnly(Side.SERVER)
 public class ServerProxy extends CommonProxy {
+    @Override public Side getSide() { return Side.SERVER; }
 }
