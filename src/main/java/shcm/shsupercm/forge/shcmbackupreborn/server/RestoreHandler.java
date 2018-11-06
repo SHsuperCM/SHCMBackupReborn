@@ -40,9 +40,10 @@ public class RestoreHandler {
             } else { // isClient
                 RestoreHandler.worldDirectory = worldDirectory;
                 RestoreHandler.backup = backup;
-                Minecraft.getMinecraft().loadWorld(null);
-                //tryRestore(false,worldDirectory,backup);
-                //Todo fix creating the restore gui when working on ClientProxy from server thread
+                FMLCommonHandler.instance().getMinecraftServerInstance().initiateShutdown();
+                tryRestore(false,worldDirectory,backup);
+                //Todo tryRestore needs to be invoked from the logical client after initiateShutdown
+                //TODO set static volatile field and check field from client events
             }
         } else { // !running
             if(worldDirectory == null && backup == null) {

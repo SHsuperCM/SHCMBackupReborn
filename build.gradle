@@ -1,7 +1,7 @@
 buildscript {
     repositories {
         jcenter()
-        maven { url = "http://files.minecraftforge.net/maven" }
+        maven { url "http://files.minecraftforge.net/maven" }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
@@ -26,8 +26,15 @@ minecraft {
     
     mappings = "snapshot_20171003"
 }
+allprojects {
+  repositories {
+    flatDir { dirs 'libs' }
+  }
+}
 
 dependencies {
+	//deobfImplementation fileTree(dir: 'lib', include: ['*.jar'])
+	compile 'pancakeui-0.2'
 }
 
 processResources {
